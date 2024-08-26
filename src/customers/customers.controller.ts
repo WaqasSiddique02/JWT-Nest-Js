@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt.authguard';
+import { CustomerDto } from './dto/customers.dto';
 
 @Controller('customers')
 @ApiTags("Customer")
@@ -28,26 +29,32 @@ export class CustomersController {
         return this.customersService.findAll();
     }
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Post()
     @ApiBody({
         description: 'Add a new customer',
         type: String,
       })
-    create(@Body() customer:{firstname:string,lastname:string,dob:string}): Promise<any>{
+    create(@Body() customer:CustomerDto): Promise<any>{
         return this.customersService.create(customer);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Put(":id")
     @ApiBody({
         description: 'Update a customer',
         type: String,
     })
-    Update(@Param('id') id:number,@Body()customer:{firstname:string,lastname:string,dob:string}){
+    Update(@Param('id',ParseIntPipe) id:number,@Body()customer:CustomerDto): Promise<any>{
         return this.customersService.update(id,customer);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Delete(":id")
-    Delete(@Param('id') id:number){
+    Delete(@Param('id',ParseIntPipe) id:number): Promise<any>{
         return this.customersService.delete(id);
     }
 }

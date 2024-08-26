@@ -1,6 +1,7 @@
 import { Body, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Connection } from 'typeorm';
+import { CustomerDto } from './dto/customers.dto';
 
 @Injectable()
 export class CustomersService {
@@ -16,7 +17,7 @@ export class CustomersService {
         }
         return null;
       }
-    
+      
       async login(user: any) {
         const payload = { username: user.username, sub: user.userId };
         return {
@@ -28,12 +29,12 @@ export class CustomersService {
         return await this.connection.query(`SELECT * FROM customers`);
     }
 
-    async create(customer:{firstname:string,lastname:string,dob:string}){
+    async create(customer:CustomerDto){
         await this.connection.query(`INSERT INTO Customers (FirstName,LastName,DateOfBirth) values ('${customer.firstname}','${customer.lastname}','${customer.dob}')`)
         return this.findAll();
     }
 
-    async update(id:number,customer:{firstname:string,lastname:string,dob:string}){
+    async update(id:number,customer:CustomerDto){
        await this.connection.query(`UPDATE Customers set FirstName='${customer.firstname}',LastName='${customer.lastname}',DateOfBirth='${customer.dob}' WHERE CustomerID=${id}`);
         return this.findAll();
     }
